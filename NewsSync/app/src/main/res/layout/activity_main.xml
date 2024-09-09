@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:id="@+id/linear1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200sp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Last Sync TimeStamp"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/sync_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SOME TIME" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linear1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select sync duration!"
+            android:textSize="24sp" />
+
+        <RadioGroup
+            android:gravity="center"
+            android:id="@+id/syncRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/sync1hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 hour" />
+
+        <RadioButton
+            android:id="@+id/sync2hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 hour" />
+
+        <RadioButton
+            android:id="@+id/sync4hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4 hour" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/syncButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="50dp"
+        android:text="Sync Now"
+        app:layout_constraintTop_toBottomOf="@id/linear2"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/deleteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="50dp"
+        android:text="Delete Old Entries"
+        app:layout_constraintTop_toBottomOf="@id/syncButton"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "399387963918",
+    "project_id": "crispynews-envy",
+    "storage_bucket": "crispynews-envy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:399387963918:android:5f5c26e2e3f8e73a05425f",
+        "android_client_info": {
+          "package_name": "com.envy.newssync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBICme06dnLY-1oTuhY6Ea4VufopXYytn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
