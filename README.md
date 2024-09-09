@@ -4,6 +4,15 @@
 ## Overview
 CrispyNews is a personalized news app designed to deliver customized news articles based on user preferences and behavior. It utilizes a **Q-Learning** model to learn user interests and adjust content recommendations in real-time. The project consists of two components: the **Newsync App**, which fetches news from external sources, and the **CrispyNews App**, which delivers personalized content to the users.
 
+## Screenshots
+
+<p align="center">
+  <img src="Screenshot/login.jpg" width="30%" />
+  <img src="Screenshot/mainarticle.jpg" width="30%" />
+  <img src="Screenshot/Enter_Interests.jpg" width="30%" />
+</p>
+
+
 ## Key Features
 
 ### Newsync App
