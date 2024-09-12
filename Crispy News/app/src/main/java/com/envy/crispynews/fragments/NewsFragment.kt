@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.sql.Timestamp
 
+
+//Fragment which displays one news article
 class NewsFragment : Fragment() {
 
     //Variables
@@ -158,6 +160,8 @@ class NewsFragment : Fragment() {
                     this.like=true
                 }
             }
+
+            //Function to update like count dynamically as likes increase on a fragment
             newsRef.addSnapshotListener{ snapshot, error ->
                 if(error !=null){
                     error.printStackTrace()

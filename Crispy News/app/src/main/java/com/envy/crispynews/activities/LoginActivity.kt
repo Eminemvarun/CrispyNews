@@ -18,7 +18,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-
+//Activity to allow user to login to the app, also the first activity to be launched.
 class LoginActivity : AppCompatActivity() {
 
     private var firebaseAuth = FirebaseAuth.getInstance()
@@ -66,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    //Activity Result launcher after login to start main activity
+    //Activity Result launcher to implement google login later
     private val activityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -117,8 +117,8 @@ class LoginActivity : AppCompatActivity() {
         videoview.pause()
     }
 
+    //Google Sign In Logic and BUtton Set
     fun setupSignInGoogle() {
-        //Google Sign In Logic and BUtton Set
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.web_client_id))
             .requestEmail().build()

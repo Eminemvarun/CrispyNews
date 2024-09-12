@@ -8,6 +8,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 
+
+//Repository function to manage everything firebase related. Keeps a live copy of user interests, database reference
+// and lastfetcheddocument count so next articles load after one is ended.
+
 class FirebaseRepository {
 
     private val db = FirebaseFirestore.getInstance()

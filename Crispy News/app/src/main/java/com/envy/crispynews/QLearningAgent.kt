@@ -10,7 +10,7 @@ class QLearningAgent(
     private val numActions: Int, // Number of categories or actions
     private val alpha: Double = 0.2, // Learning rate
     private val gamma: Double = 0.8, // Discount factor
-    private val epsilon: Double = 0.8, // Exploration rate
+    private var epsilon: Double = 0.8, // Exploration rate
     private val categories: List<String> = listOf("general", "technology", "sports", "entertainment", "health", "science", "business") // Article categories
 ) {
     private val qTable: MutableMap<Int, MutableMap<String, Double>> = mutableMapOf()
@@ -26,8 +26,8 @@ class QLearningAgent(
         } else {
             // Exploitation: choose the top categories based on Q-values
             val topCategories = sortedCategories.take(numActions)
+            Log.i("ENVYLOGS","Exploitation choosen for state $state with $topCategories")
             if (topCategories.size < numActions) {
-                // If not enough top categories, add more random ones
                 val additionalCategories = categories.shuffled()
                     .filter { it !in topCategories }.take(numActions - topCategories.size)
                 return topCategories + additionalCategories
@@ -106,8 +106,6 @@ class QLearningAgent(
 
     suspend fun loadQTableFromFirestore(agentId: String): MutableMap<Int, MutableMap<String, Double>> {
         val db = FirebaseFirestore.getInstance()
-        Log.i("ENVYLOGS", "Starting to load QTable for Agent ID: $agentId")
-
         try {
             val doc = db.collection("QTables")
                 .document("qTable")
@@ -128,7 +126,7 @@ class QLearningAgent(
             Log.i("ENVYLOGS", "QTable fetched from Firestore: $qTableData")
 
             // Transform the fetched data into the required format
-            return qTableData.groupBy { entry ->
+            val fetchedQTable =  qTableData.groupBy { entry ->
                 (entry["state"] as? Number)?.toInt()
                     ?: throw IllegalArgumentException("State value must be a number")
             }.mapValues { (_, entries) ->
@@ -138,6 +136,15 @@ class QLearningAgent(
                     action to qValue
                 }.toMutableMap()
             }.toMutableMap()
+
+            val qTableSize = fetchedQTable.values.sumOf { it.size }
+
+            epsilon = 0.9 - (qTableSize / 8748.0) * (0.9 - 0.5)
+            epsilon = epsilon.coerceIn(0.5, 0.9) // Ensure epsilon stays within 0.5 to 0.9
+
+            Log.i("ENVYLOGS", "Epsilon adjusted to: $epsilon based on QTable size: $qTableSize")
+
+            return fetchedQTable
 
         } catch (e: Exception) {
             Log.e("ENVYLOGS", "Exception occurred while loading QTable: ${e.message}")

@@ -7,7 +7,8 @@ import kotlin.math.pow
 
 private const val MIN_SCALE = 0.75f
 
-
+//Animation when user swipes from one article to another, fades and swipe up one article, zooms in
+// and increase size of the second article coming from behind the first one
 class VerticalDepthPageTransformer : ViewPager2.PageTransformer {
 
     override fun transformPage(view: View, position: Float) {

@@ -26,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
+//Main activity to display news and help user navigate to different sections
 class MainActivity : AppCompatActivity(), OnActionExecutedListener {
 
     private lateinit var mainViewPagerAdapter: MainViewPagerAdapter
@@ -103,6 +105,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
         }
     }
 
+    //Initial method to load fetched articles and show them to the user
     private suspend fun fetchAndDisplayArticles() {
             try {
                 val articles = fetchArticlesBasedOnQlearning(userId)
@@ -132,6 +135,10 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
             }
     }
 
+
+    // Function which uses qlearning agent to decide which article to display and then fetches
+    // and returns those recommended articles
+
     private suspend fun fetchArticlesBasedOnQlearning(userId: String): List<NewsArticle> {
         selectedActions.clear()
         val state = myRepository.getCurrentState(userId) as Int // Assuming getCurrentState returns an Int state
@@ -158,6 +165,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
     }
 
 
+    //Function which loads more articles as user swipes to the bottom
     private fun loadMoreArticles() {
         Toast.makeText(this, "Loading More Articles", Toast.LENGTH_SHORT).show()
         CoroutineScope(Dispatchers.IO).launch {
@@ -201,6 +209,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
         myRepository.updateInterest(currentArticleCategory,reward)
     }
 
+    //Function which destroys activity if user has logged out
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -211,6 +220,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
         }
     }
 
+    //Code which animates a swipe up once articles are loaded
     private fun animateFirstFragment() {
         val firstPage = viewPager.getChildAt(0) // Get the first page view
         firstPage?.let { page ->

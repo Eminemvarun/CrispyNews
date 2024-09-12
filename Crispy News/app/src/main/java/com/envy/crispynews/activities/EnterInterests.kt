@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.envy.crispynews.databinding.ActivityEnterInterestsBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
+//Activity to allow user to enter their interests in their specific user category
 class EnterInterests : AppCompatActivity() {
         private var interestExists : Boolean = false
         private lateinit var binding: ActivityEnterInterestsBinding
@@ -29,7 +29,7 @@ class EnterInterests : AppCompatActivity() {
                 finish()
             }
         }
-
+    //Function to fetch interest from firebase and push it to UI
     private fun loadInterestsFromFirestore() {
         if (userId != null) {
             db.collection("user").document(userId).get()
@@ -62,18 +62,7 @@ class EnterInterests : AppCompatActivity() {
         }
     }
 
-    private fun denormalizeSliderValue(value: Double): Float {
-        val returnval = roundToStepSize((value * 100).toFloat())
-        Log.i("ENVYLOG","Returned value is $returnval")
-        return returnval
-
-    }
-
-    private fun roundToStepSize(value: Float): Float {
-        val stepSize = 10.0f // Define the step size
-        return (Math.round(value / stepSize) * stepSize)
-    }
-
+    //Function to save the slider values in UI to firestore in the users id
     private fun saveInterestsToFirestore() {
         if (userId != null) {
             val userInterests: Map<String, Any> =
@@ -102,6 +91,20 @@ class EnterInterests : AppCompatActivity() {
         }
     }
 
+    //Utility Function
+    private fun denormalizeSliderValue(value: Double): Float {
+        val returnval = roundToStepSize((value * 100).toFloat())
+        Log.i("ENVYLOG","Returned value is $returnval")
+        return returnval
+
+    }
+    //Utility Function
+    private fun roundToStepSize(value: Float): Float {
+        val stepSize = 10.0f // Define the step size
+        return (Math.round(value / stepSize) * stepSize)
+    }
+
+    //Utility function
     private fun normalizeSliderValue(value: Float): Float {
             return value / 100
         }

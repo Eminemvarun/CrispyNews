@@ -1,6 +1,7 @@
 package com.envy.crispynews.models
 import java.util.Date
 
+//Model class news article
 data class NewsArticle (
     val title: String = "",
     val description: String? = null,
