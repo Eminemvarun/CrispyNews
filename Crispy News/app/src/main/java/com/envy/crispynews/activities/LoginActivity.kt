@@ -1,5 +1,7 @@
 package com.envy.crispynews.activities
 
+import android.app.Activity
+import android.app.ComponentCaller
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,11 +10,13 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import android.widget.VideoView
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import com.envy.crispynews.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +29,10 @@ class LoginActivity : AppCompatActivity() {
     lateinit var loginProgressBar: ProgressBar
     private lateinit var videoview: VideoView
     private lateinit var signInBTN: AppCompatButton
+    private lateinit var googleloginBTN: AppCompatButton
+    lateinit var gsc: GoogleSignInClient
+    lateinit var gso: GoogleSignInOptions
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,23 +41,22 @@ class LoginActivity : AppCompatActivity() {
         videoview = findViewById(R.id.videoView)
         loginProgressBar = findViewById(R.id.loginProgress)
         signInBTN = findViewById(R.id.loginBTN)
+        googleloginBTN = findViewById(R.id.googleloginBTN)
 
-        //Videoview setup
+        //Redirect if user is logged in already
+        if (firebaseAuth.currentUser != null) {
+            val intent: Intent = Intent(this@LoginActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        //Video setup
         val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.video_background)
         videoview.setVideoURI(uri)
         videoview.setOnPreparedListener { mp ->
             mp.isLooping = true
         }
 
-        //Redirect if user is logged in already
-        if (firebaseAuth.currentUser != null) {
-            val intent: Intent = Intent(
-                this@LoginActivity,
-                MainActivity::class.java
-            )
-            startActivity(intent)
-            finish()
-        }
         //When User clicks sign in button
         signInBTN.setOnClickListener {
             loginProgressBar.visibility = View.VISIBLE
@@ -64,48 +71,91 @@ class LoginActivity : AppCompatActivity() {
                 loginProgressBar.visibility = View.GONE
             }
         }
-    }
+        //Google sign in logic
 
-    //Activity Result launcher to implement google login later
-    private val activityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val accountTask = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                try {
-                    val signInAccount = accountTask.getResult(ApiException::class.java)
-                    val authCredential =
-                        GoogleAuthProvider.getCredential(signInAccount.idToken, null)
-                    FirebaseAuth.getInstance().signInWithCredential(authCredential)
-                        .addOnSuccessListener { authResult ->
-                            val firebaseUser = authResult.user
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "Welcome ${firebaseUser?.displayName}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                            startActivity(intent)
-                            overridePendingTransition(
-                                androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
-                                androidx.appcompat.R.anim.abc_fade_out
-                            )
-                            finish()
-                        }
-                        .addOnFailureListener { e ->
-                            loginProgressBar.visibility = View.INVISIBLE
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "Sign In Failed!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                } catch (e: ApiException) {
-                    e.printStackTrace()
-                    loginProgressBar.visibility = View.VISIBLE
-                    Toast.makeText(this@LoginActivity, "Error", Toast.LENGTH_SHORT).show()
-                }
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.web_client_id))
+            .requestEmail().build()
+        gsc = GoogleSignIn.getClient(this, gso)
+
+        googleloginBTN.setOnClickListener{
+            signIn()
+        }
+
+    }
+//
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, caller: ComponentCaller) {
+//        super.onActivityResult(requestCode, resultCode, data, caller)
+//
+//        if (requestCode == 1000) {
+//            val accountTask = GoogleSignIn.getSignedInAccountFromIntent(data)
+//            try {
+//                val signInAccount = accountTask.getResult(ApiException::class.java)
+//                val authCredential =
+//                    GoogleAuthProvider.getCredential(signInAccount.idToken, null)
+//                FirebaseAuth.getInstance().signInWithCredential(authCredential)
+//                    .addOnSuccessListener { authResult ->
+//                        val firebaseUser = authResult.user
+//                        Toast.makeText(this@LoginActivity, "Welcome ${firebaseUser?.displayName}", Toast.LENGTH_SHORT).show()
+//                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+//                        startActivity(intent)
+//                        overridePendingTransition(
+//                            androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+//                            androidx.appcompat.R.anim.abc_fade_out
+//                        )
+//                        finish()
+//                    }
+//                    .addOnFailureListener { e ->
+//                        loginProgressBar.visibility = View.INVISIBLE
+//                        Toast.makeText(
+//                            this@LoginActivity,
+//                            "Sign In Failed!",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//            } catch (e: ApiException) {
+//                e.printStackTrace()
+//                loginProgressBar.visibility = View.VISIBLE
+//                Toast.makeText(this@LoginActivity, "Error", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//
+//    }
+//
+
+    private val  googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val accountTask = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val signInAccount = accountTask.getResult(ApiException::class.java)
+                val authCredential = GoogleAuthProvider.getCredential(signInAccount.idToken, null)
+                FirebaseAuth.getInstance().signInWithCredential(authCredential)
+                    .addOnSuccessListener { authResult ->
+                        val firebaseUser = authResult.user
+                        Toast.makeText(this, "Welcome ${firebaseUser?.displayName}", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        overridePendingTransition(
+                            androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom,
+                            androidx.appcompat.R.anim.abc_fade_out
+                        )
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        loginProgressBar.visibility = View.INVISIBLE
+                        Toast.makeText(this, "Sign In Failed!", Toast.LENGTH_SHORT).show()
+                    }
+            } catch (e: ApiException) {
+                e.printStackTrace()
+                loginProgressBar.visibility = View.VISIBLE
+                Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
 
     override fun onResume() {
         super.onResume()
@@ -117,12 +167,9 @@ class LoginActivity : AppCompatActivity() {
         videoview.pause()
     }
 
-    //Google Sign In Logic and BUtton Set
-    fun setupSignInGoogle() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
-            .requestEmail().build()
-        val signInClient = GoogleSignIn.getClient(this, gso)
-        // Main Activity put activityResultLauncher.launch(i)
+    private fun signIn(){
+        val signInIntent = gsc.signInIntent
+        googleSignInLauncher.launch(signInIntent)
     }
+
 }

@@ -16,6 +16,7 @@ class EnterInterests : AppCompatActivity() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+            //View binding
             binding = ActivityEnterInterestsBinding.inflate(layoutInflater)
             setContentView(binding.root)
             loadInterestsFromFirestore()

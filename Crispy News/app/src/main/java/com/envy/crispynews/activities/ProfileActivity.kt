@@ -27,7 +27,10 @@ class ProfileActivity : AppCompatActivity() {
         val deleteBTN : Button = findViewById(R.id.delete_account)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true);
-        name.text = ("""Welcome ${firebaseAuth.currentUser?.displayName}""")
+        if(firebaseAuth.currentUser?.displayName != null){
+            name.text = ("""Welcome ${firebaseAuth.currentUser?.displayName}""")
+
+        }
 
         //Logout button function
         logoutBTN.setOnClickListener {

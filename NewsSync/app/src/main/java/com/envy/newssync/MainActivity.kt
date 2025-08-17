@@ -1,21 +1,18 @@
 package com.envy.newssync
 
-import android.content.Context
+import  android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.text.format.DateUtils
-import android.view.View
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -24,15 +21,10 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.envy.newssync.repository.FirestoreRepository
 import com.envy.newssync.worker.DownloadNewsWorker
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QueryDocumentSnapshot
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -49,13 +41,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         syncRadioGroup = findViewById(R.id.syncRadioGroup)
         timestampTV = findViewById(R.id.sync_timestamp)
         syncBTN = findViewById(R.id.syncButton)
         deleteBTN = findViewById(R.id.deleteButton)
-
         sharepreference = getSharedPreferences("sync_prefs", Context.MODE_PRIVATE);
 
 
@@ -67,13 +57,13 @@ class MainActivity : AppCompatActivity() {
             val selectedRadioButton = findViewById<RadioButton>(checkedId)
             saveSelectedSyncInterval(checkedId)
             when (selectedRadioButton.id) {
-                R.id.sync1hour -> scheduleSync(1)
-                R.id.sync2hour -> scheduleSync(2)
-                R.id.sync4hour -> scheduleSync(4)
+                R.id.sync1hour -> scheduleSync(2)
+                R.id.sync2hour -> scheduleSync(4)
+                R.id.sync4hour -> scheduleSync(8)
             }
         }
 
-        syncBTN.setOnClickListener(View.OnClickListener {
+        syncBTN.setOnClickListener( {
             performOneTimeSync()
         })
 
@@ -81,16 +71,8 @@ class MainActivity : AppCompatActivity() {
         sharepreference.registerOnSharedPreferenceChangeListener(listener)
 
         deleteBTN.setOnClickListener { view ->
-            val oneWeekAgo = System.currentTimeMillis() - 7 * DateUtils.DAY_IN_MILLIS
-            FirebaseFirestore.getInstance().collection("news")
-                .whereGreaterThan("published_at", oneWeekAgo)
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    querySnapshot.forEach { snapshot: QueryDocumentSnapshot ->
-                        snapshot.reference.delete()
-                    }
-                    Toast.makeText(applicationContext, "Deleted Successfully: ${querySnapshot.size()}", Toast.LENGTH_SHORT).show()
-                }
+                val oneWeekAgo = System.currentTimeMillis() - 7 * DateUtils.DAY_IN_MILLIS
+
         }
 
     }
@@ -128,10 +110,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getLastSyncTime(context: Context): Long{
-        return sharepreference.getLong("last_sync_time", -1)
-    }
-
     private fun displayLastSyncTime(sharePreference :SharedPreferences) {
         val lastSyncTime = sharePreference.getLong("last_sync_time", -1)
         if (lastSyncTime != -1L) {
@@ -151,7 +129,6 @@ class MainActivity : AppCompatActivity() {
         // Create a OneTimeWorkRequest for DownloadNewsWorker
         val oneTimeSyncRequest = OneTimeWorkRequest.Builder(DownloadNewsWorker::class.java)
             .build()
-
         // Enqueue the work
         WorkManager.getInstance(applicationContext).enqueue(oneTimeSyncRequest)
 
@@ -190,7 +167,9 @@ class MainActivity : AppCompatActivity() {
             val signInClient = GoogleSignIn.getClient(this, gso)
             val i: Intent = signInClient.getSignInIntent()
             //activityResultLauncher.launch(i)
-
+        }
+        else{
+            Toast.makeText(applicationContext,"Already logged in google signed in",Toast.LENGTH_SHORT,)
         }
     }
 }

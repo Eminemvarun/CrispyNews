@@ -1,25 +1,29 @@
 package com.envy.crispynews.activities
 
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.envy.crispynews.FirebaseRepository
-import com.envy.crispynews.utils.MainViewPagerAdapter
 import com.envy.crispynews.OnActionExecutedListener
 import com.envy.crispynews.QLearningAgent
 import com.envy.crispynews.R
 import com.envy.crispynews.SharedViewModel
-import com.envy.crispynews.utils.VerticalDepthPageTransformer
 import com.envy.crispynews.models.NewsArticle
+import com.envy.crispynews.utils.MainViewPagerAdapter
+import com.envy.crispynews.utils.VerticalDepthPageTransformer
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +36,8 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
 
     private lateinit var mainViewPagerAdapter: MainViewPagerAdapter
     private val newsArticles = mutableListOf<NewsArticle>()
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: VideoView
+    private lateinit var uri: Uri
     private lateinit var loadingTV : TextView
     private lateinit var viewPager: ViewPager2
     private lateinit var qLearningAgent: QLearningAgent
@@ -42,6 +47,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
     private var initialState: Int = 0
     private val selectedActions = mutableListOf<String>()
     private val REQUEST_EXIT = 17
+    private lateinit var layout : ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,10 +66,39 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
         viewPager.adapter = mainViewPagerAdapter
         viewPager.setPageTransformer(VerticalDepthPageTransformer())
         progressBar.visibility = View.VISIBLE
+        layout = findViewById(R.id.mainConstraintLayout)
+
+        //Setup random loading text
+        val loadingMessages = resources.getStringArray(R.array.loading_messages)
+        val randomMessage = loadingMessages.random() // Randomly picks a message
+        loadingTV.text = randomMessage
+
+        //Setup Video Vieo Loading
+
+        val nightModeFlags =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            layout.setBackgroundColor(Color.BLACK)
+            uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.britbuzzanimatedark)
+            loadingTV.setTextColor(Color.BLACK)
+        } else {
+            layout.setBackgroundColor(Color.WHITE)
+            uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.britbuzzanimate)
+        }
+        progressBar.setVideoURI(uri)
+        progressBar.start();
+
+
+        // Loop the video
+        progressBar.setOnPreparedListener { mp ->
+            mp.isLooping = true
+        }
+
 
         // Toolbar and Profile Button Setup
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        toolbar.setLogo(R.mipmap.crispy_icon)
+        toolbar.setLogo(R.mipmap.britbuzzlogo_round)
         setSupportActionBar(toolbar)
         val profileIcon: ImageView = findViewById(R.id.profile_icon)
         profileIcon.setOnClickListener {
@@ -87,6 +122,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
                     Log.i("ENVYLOG","User interest found as $userInterests")
                     fetchAndDisplayArticles()
                 } else {
+                    //If user doesn't exist take their interests input
                     withContext(Dispatchers.Main) {
                         startActivity(Intent(this@MainActivity, EnterInterests::class.java))
                         overridePendingTransition(
@@ -114,6 +150,7 @@ class MainActivity : AppCompatActivity(), OnActionExecutedListener {
                     newsArticles.clear()
                     newsArticles.addAll(articles)
                     mainViewPagerAdapter.notifyItemRangeInserted(0,newsArticles.size)
+                    progressBar.pause()
                     progressBar.visibility = View.GONE
                     loadingTV.visibility = View.GONE
                     animateFirstFragment()

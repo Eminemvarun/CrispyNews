@@ -26,7 +26,7 @@
         android:textColor="@color/black"
         android:fontFamily="sans-serif-smallcaps"
         android:gravity="center"
-        android:text="Crispy News"
+        android:text="@string/app_name"
         android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="@+id/videoView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,12 +44,27 @@
         />
 
     <Button
+        android:id="@+id/googleloginBTN"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="10sp"
+        android:paddingHorizontal="70sp"
+        android:drawableLeft="@drawable/googleg_standard_color_18"
+        android:text="Sign in with Google"
+
+        app:layout_constraintBottom_toTopOf="@id/loginBTN"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/loginBTN"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:textColor="@color/white"
-        android:layout_marginBottom="150sp"
+        android:layout_marginBottom="100sp"
         android:paddingHorizontal="70sp"
         android:text="Log in Anonymously"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -5,6 +5,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.envy.crispynews.models.NewsArticle
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class FirestoreRepository {
@@ -14,6 +15,9 @@ class FirestoreRepository {
         val newsCollection = firestore.collection("news")
         val documentId = "${newsArticle.title}_${newsArticle.published_at?.time}_${newsArticle.source}"
 
+        if (FirebaseAuth.getInstance().signInAnonymously().isSuccessful){
+            Log.i("ENVYLOG","Logged In Anonymously")
+        }
         newsCollection.document(documentId).get().addOnSuccessListener { document ->
             if (document.exists()) {
                 //Skip saving document

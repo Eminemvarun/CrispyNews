@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.envy.crispynews"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.envy.crispynews"
         minSdk = 24
@@ -56,13 +56,18 @@ dependencies {
     //ViewPager2
     implementation(libs.androidx.viewpager2)
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.analytics.ktx)
+    implementation (libs.firebase.ui.auth)
     // Glide for image loading
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation ("androidx.browser:browser:1.8.0")
+    implementation(libs.glide)
+    implementation (libs.androidx.browser)
+
+    implementation(libs.play.services.auth)
+    implementation(libs.google.firebase.auth.ktx)
+
+
     //Ads
     //implementation("com.google.android.gms:play-services-ads:23.3.0")
 }

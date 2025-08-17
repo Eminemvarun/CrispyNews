@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.envy.newssync"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
+
     androidTestImplementation(libs.androidx.espresso.core)
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
     // Gson library for parsing JSON
@@ -55,18 +56,20 @@ dependencies {
     // Retrofit for API calls
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Firebase BOM (use the latest version)
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
 
-    // Firebase Firestore
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-    implementation ("com.google.firebase:firebase-firestore-ktx")
-    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+    // Firebase Firestore and Authentication
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-auth")
+
+    // Firebase UI for Authentication (if needed)
+    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
+
 
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 
-    //FireStore
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
-    implementation("com.google.firebase:firebase-firestore")
 
 }

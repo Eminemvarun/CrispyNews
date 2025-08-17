@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CrispyNews</string>
+    <string name="app_name">BritBuzz</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -15,4 +15,13 @@
     <string name="category_format">Category: %s</string>
     <string name="likes_count">Like (%d)</string>
 
+    <string-array name="loading_messages">
+        <item>Loading personalized feed…</item>
+        <item>Fetching content for you…</item>
+        <item>Hang tight, loading your feed…</item>
+        <item>Loading your favorites…</item>
+        <item>Connecting you the best journalism…</item>
+        <item>Aggregating news for you…</item>
+
+    </string-array>
 </resources>

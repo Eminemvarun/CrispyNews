@@ -2,6 +2,8 @@ package com.envy.crispynews.fragments
 
 import com.envy.crispynews.FirebaseRepository
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
@@ -23,6 +25,9 @@ import com.envy.crispynews.models.NewsArticle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.sql.Timestamp
+import android.content.res.Configuration
+import android.graphics.Color
+import androidx.core.content.ContextCompat
 
 
 //Fragment which displays one news article
@@ -101,6 +106,19 @@ class NewsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentNewsBinding.inflate(inflater, container, false)
 
+        //Adjusting to smaller screen phones
+
+        val pixelHeight = resources.displayMetrics.heightPixels
+        Log.i("ENVYLOG","Display height is $pixelHeight")
+        if(pixelHeight <1500){
+            binding.descriptionTextView.maxLines= 4
+            binding.titleTextView.maxLines = 3
+            binding.fragmentNewsReadMoreBTN.textSize = 12F
+            binding.fragmentNewsReadMoreBTN.textSize = 12F
+        }
+        binding.imageView.layoutParams.height = (pixelHeight *0.4).toInt()
+
+
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         myRepository = sharedViewModel.firebaseRepository
         qLearningAgent =  sharedViewModel.qLearningAgent
@@ -111,7 +129,17 @@ class NewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fragmentPosition = arguments?.getInt(ARG_POSITION, -1) ?: -1
-        arguments?.let {
+        val isNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+        val cardBackgroundColor = ContextCompat.getColor(requireContext(), R.color.light_grey)
+
+        // Dynamically set the background color of the root layout
+        if (isNightMode) {
+            binding.layoutFragment.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.dark_gray))
+        } else {
+            binding.layoutFragment.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+        }
+
+            arguments?.let {
             //Everything
             binding.titleTextView.text = it.getString(ARG_TITLE)
             binding.descriptionTextView.text = it.getString(ARG_DESCRIPTION)
@@ -153,12 +181,26 @@ class NewsFragment : Fragment() {
                     binding.fragmentNewsLikeBTN.startAnimation(animation)
                     reward +=0.075
                     newsRef
-                        .update(ARG_POPULARITY, popularity + 1)
+                        .update(ARG_POPULARITY,popularity + 1)
                         .addOnSuccessListener {
                             Log.i("ENVYLOGS","Liked! updated to $popularity +1")
                         }
+                        .addOnFailureListener{
+                            Log.i("ENVYLOGS","Failed to update like")
+                        }
                     this.like=true
                 }
+            }
+
+            //Share link
+            binding.fragmentShareButton.setOnClickListener{
+                val share = Intent.createChooser(Intent().apply{
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT,urlToArticle.toString())
+                    putExtra(Intent.EXTRA_TITLE, title)
+                    type= "text/plain"
+                },null)
+                startActivity(share)
             }
 
             //Function to update like count dynamically as likes increase on a fragment

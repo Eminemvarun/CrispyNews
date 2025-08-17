@@ -59,19 +59,19 @@
             android:id="@+id/sync1hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1 hour" />
+            android:text="2 hour" />
 
         <RadioButton
             android:id="@+id/sync2hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2 hour" />
+            android:text="4 hour" />
 
         <RadioButton
             android:id="@+id/sync4hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4 hour" />
+            android:text="8 hour" />
 
         </RadioGroup>
 
